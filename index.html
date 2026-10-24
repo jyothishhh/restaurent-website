@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L'Aura Bistro & Bar — Enterprise Restaurant ERP & POS</title>
+    <meta name="description" content="Next-generation Restaurant ERP system featuring integrated POS, Live Kitchen Display (KDS), Table Floor Management, Inventory Control, and Financial Analytics.">
+    
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons 1.11.3 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom ERP Theme -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="brand-section">
+                <div class="brand-logo-icon">
+                    <i class="bi bi-cup-hot-fill"></i>
+                </div>
+                <div>
+                    <div class="brand-title">L'AURA ERP</div>
+                    <span class="brand-badge">BISTRO & LOUNGE</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li>
+                    <button class="nav-item-btn active" data-view="dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="pos">
+                        <i class="bi bi-terminal"></i>
+                        <span>POS Terminal</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="kitchen">
+                        <i class="bi bi-fire"></i>
+                        <span>Kitchen (KDS)</span>
+                        <span class="nav-counter" id="navCounterKDS">0</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="tables">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        <span>Floor & Tables</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="inventory">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Inventory</span>
+                        <span class="nav-counter bg-warning text-dark" id="navCounterInv">0</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="menu">
+                        <i class="bi bi-book"></i>
+                        <span>Menu & Recipes</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="staff">
+                        <i class="bi bi-people"></i>
+                        <span>Staff & Roster</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="reports">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        <span>Analytics & P&L</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item-btn" data-view="settings">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">AD</div>
+                <div class="overflow-hidden">
+                    <div class="fw-bold small text-truncate">Antoine Dubois</div>
+                    <div class="text-muted" style="font-size:0.75rem;">General Manager</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <h1 class="view-title" id="currentViewTitle">
+                        <i class="bi bi-speedometer2 text-warning me-2"></i>Executive Overview
+                    </h1>
+                </div>
+                <div class="header-right">
+                    <div class="status-pill d-none d-md-inline-flex">
+                        <span class="status-pulse"></span>
+                        <span>Service Live</span>
+                    </div>
+                    <div class="status-pill d-none d-sm-inline-flex font-monospace text-warning fw-bold" id="headerClock">
+                        12:00:00 PM
+                    </div>
+                    <button class="btn-icon" id="audioToggleBtn" title="Toggle Sound Alerts">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                    <button class="btn-icon" id="themeToggleBtn" title="Switch Theme">
+                        <i class="bi bi-sun"></i>
+                    </button>
+                    <button class="btn btn-erp-primary btn-sm d-flex align-items-center gap-2" onclick="window.app.switchView('pos')">
+                        <i class="bi bi-plus-lg"></i>
+                        <span class="d-none d-sm-inline">New Ticket</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- ================= VIEW 1: DASHBOARD ================= -->
+                <section class="view-pane active" id="view-dashboard">
+                    <!-- KPI Cards Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small fw-bold text-uppercase">Today's Revenue</span>
+                                    <div class="stat-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                                        <i class="bi bi-currency-dollar"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value text-warning" id="dashTodayRevenue">$0.00</div>
+                                <div class="stat-trend trend-up">
+                                    <i class="bi bi-arrow-up-right"></i> +14.8% vs yesterday
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small fw-bold text-uppercase">Active Kitchen Tickets</span>
+                                    <div class="stat-icon-wrapper bg-info bg-opacity-10 text-info">
+                                        <i class="bi bi-fire"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value text-info" id="dashActiveOrders">0</div>
+                                <div class="stat-trend text-muted">
+                                    Avg prep time: 14 mins
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small fw-bold text-uppercase">Table Occupancy</span>
+                                    <div class="stat-icon-wrapper bg-success bg-opacity-10 text-success">
+                                        <i class="bi bi-pie-chart"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value text-success" id="dashOccupancyRate">0%</div>
+                                <div class="stat-trend trend-up">
+                                    Prime dining rush hour
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted small fw-bold text-uppercase">Low Stock Alerts</span>
+                                    <div class="stat-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                </div>
+                                <div class="stat-value text-danger" id="dashLowStock">0</div>
+                                <div class="stat-trend text-warning cursor-pointer" onclick="window.app.switchView('inventory')">
+                                    Review raw materials &rarr;
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Row -->
+                    <div class="glass-panel p-3 mb-4">
+                        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                            <div class="fw-bold small text-uppercase text-secondary">
+                                <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Quick Actions
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-erp-primary" onclick="window.app.switchView('pos')">
+                                    <i class="bi bi-terminal me-1"></i> Launch POS
+                                </button>
+                                <button class="btn btn-sm btn-erp-secondary" data-bs-toggle="modal" data-bs-target="#newReservationModal">
+                                    <i class="bi bi-calendar-plus me-1"></i> Reserve Table
+                                </button>
+                                <button class="btn btn-sm btn-erp-secondary" data-bs-toggle="modal" data-bs-target="#newExpenseModal">
+                                    <i class="bi bi-wallet2 me-1"></i> Log Expense
+                                </button>
+                                <button class="btn btn-sm btn-erp-secondary" data-bs-toggle="modal" data-bs-target="#restockModal">
+                                    <i class="bi bi-truck me-1"></i> Quick Restock
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" onclick="window.app.switchView('kitchen')">
+                                    <i class="bi bi-display me-1"></i> KDS Screen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts & Live Feed Grid -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-8">
+                            <div class="glass-panel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h5 class="fw-bold mb-0">Hourly Sales Velocity</h5>
+                                        <small class="text-muted">Live revenue progression through operating hours</small>
+                                    </div>
+                                    <span class="badge bg-dark border text-warning"><i class="bi bi-graph-up me-1"></i>Live Stream</span>
+                                </div>
+                                <div style="height: 280px; position: relative;">
+                                    <canvas id="salesTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="glass-panel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="fw-bold mb-0">Live Service Feed</h5>
+                                    <span class="badge bg-success bg-opacity-25 text-success">REALTIME</span>
+                                </div>
+                                <div id="dashActivityStream" class="overflow-y-auto" style="max-height: 280px;">
+                                    <!-- Seed items -->
+                                    <div class="d-flex align-items-center gap-3 py-2 border-bottom border-subtle">
+                                        <div class="stat-icon-wrapper bg-dark border text-success" style="width: 34px; height: 34px; font-size: 1rem;">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </div>
+                                        <div class="flex-grow-1 small">
+                                            <div class="fw-semibold text-primary">Shift opened by Antoine Dubois</div>
+                                            <div class="text-muted" style="font-size:0.75rem;">10:00 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3 py-2 border-bottom border-subtle">
+                                        <div class="stat-icon-wrapper bg-dark border text-warning" style="width: 34px; height: 34px; font-size: 1rem;">
+                                            <i class="bi bi-receipt"></i>
+                                        </div>
+                                        <div class="flex-grow-1 small">
+                                            <div class="fw-semibold text-primary">Order #ORD-1001 sent to Kitchen</div>
+                                            <div class="text-muted" style="font-size:0.75rem;">10:14 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3 py-2 border-bottom border-subtle">
+                                        <div class="stat-icon-wrapper bg-dark border text-info" style="width: 34px; height: 34px; font-size: 1rem;">
+                                            <i class="bi bi-bell-fill"></i>
+                                        </div>
+                                        <div class="flex-grow-1 small">
+                                            <div class="fw-semibold text-primary">Table T-01 marked Ready for Service</div>
+                                            <div class="text-muted" style="font-size:0.75rem;">10:25 AM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 2: POS TERMINAL ================= -->
+                <section class="view-pane" id="view-pos">
+                    <div class="pos-layout">
+                        <!-- Menu Catalog Panel -->
+                        <div class="pos-catalog-panel">
+                            <div class="d-flex gap-2 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-card border-subtle text-muted">
+                                        <i class="bi bi-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control erp-input" id="posSearchInput" placeholder="Quick search dishes, cocktails, desserts...">
+                                </div>
+                            </div>
+
+                            <!-- Category Pills -->
+                            <div class="category-scroll mb-3" id="posCategoryContainer">
+                                <!-- Populated dynamically -->
+                            </div>
+
+                            <!-- Menu Grid -->
+                            <div class="menu-grid" id="posMenuGrid">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Ticket / Cart Sidebar -->
+                        <div class="pos-cart-panel">
+                            <div class="p-3 border-bottom border-subtle">
+                                <!-- Order Type Selector -->
+                                <div class="btn-group w-100 mb-3" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-warning order-type-btn active" data-type="Dine-In">
+                                        <i class="bi bi-shop me-1"></i>Dine-In
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning order-type-btn" data-type="Takeaway">
+                                        <i class="bi bi-bag me-1"></i>Takeout
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning order-type-btn" data-type="Delivery">
+                                        <i class="bi bi-bicycle me-1"></i>Delivery
+                                    </button>
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-6" id="posTableSelectWrapper">
+                                        <label class="form-label small text-muted mb-1">Select Table</label>
+                                        <select class="form-select form-select-sm erp-input" id="posTableSelect">
+                                            <!-- Dynamically filled -->
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted mb-1">Assigned Server</label>
+                                        <select class="form-select form-select-sm erp-input" id="posServerSelect">
+                                            <!-- Dynamically filled -->
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <input type="text" class="form-control form-control-sm erp-input" id="posCustomerName" placeholder="Guest Name / Cover (Optional)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cart Items List -->
+                            <div class="d-flex justify-content-between align-items-center px-3 pt-2 text-muted small">
+                                <span class="fw-bold" id="posCartItemCount">0 items</span>
+                                <button class="btn btn-link btn-sm text-danger text-decoration-none p-0" onclick="window.pos.clearCart()">
+                                    <i class="bi bi-trash me-1"></i>Clear
+                                </button>
+                            </div>
+                            <div class="cart-items-scroll" id="posCartItems">
+                                <!-- Items rendered dynamically -->
+                            </div>
+
+                            <!-- Cart Summary & Checkout -->
+                            <div class="cart-summary">
+                                <!-- Discount Quick Pills -->
+                                <div class="d-flex gap-1 mb-3">
+                                    <span class="small text-muted align-self-center me-1">Discount:</span>
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 discount-pill-btn active" data-discount="0">None</button>
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 discount-pill-btn" data-discount="5">5%</button>
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 discount-pill-btn" data-discount="10">10%</button>
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 discount-pill-btn" data-discount="15">15%</button>
+                                </div>
+
+                                <div class="summary-row">
+                                    <span>Subtotal</span>
+                                    <span id="posSubtotal">$0.00</span>
+                                </div>
+                                <div class="summary-row text-danger">
+                                    <span>Discount</span>
+                                    <span id="posDiscount">-$0.00</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Sales Tax</span>
+                                    <span id="posTax">$0.00</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Service Charge</span>
+                                    <span id="posService">$0.00</span>
+                                </div>
+                                <div class="summary-row summary-total">
+                                    <span>Total Payable</span>
+                                    <span class="text-warning" id="posTotal">$0.00</span>
+                                </div>
+
+                                <div class="row g-2 mt-2">
+                                    <div class="col-6">
+                                        <button class="btn btn-erp-secondary w-100 py-2 small fw-bold" onclick="window.pos.completeOrder('unpaid')">
+                                            <i class="bi bi-clock-history me-1"></i> Send to KDS
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-erp-primary w-100 py-2 small fw-bold" id="posCheckoutBtn" onclick="window.pos.openPaymentModal()" disabled>
+                                            <i class="bi bi-credit-card me-1"></i> Settle Bill
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 3: KITCHEN DISPLAY SYSTEM ================= -->
+                <section class="view-pane" id="view-kitchen">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold small text-muted text-uppercase">Channel Filter:</span>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-warning kds-filter-btn active" data-filter="all" onclick="window.kitchen.setFilter('all')">All Tickets</button>
+                                <button class="btn btn-sm btn-outline-warning kds-filter-btn" data-filter="dine-in" onclick="window.kitchen.setFilter('dine-in')">Dine-In Only</button>
+                                <button class="btn btn-sm btn-outline-warning kds-filter-btn" data-filter="takeaway" onclick="window.kitchen.setFilter('takeaway')">Takeout / Delivery</button>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small text-muted"><i class="bi bi-info-circle me-1"></i>Click items to strike-off as cooked</span>
+                            <button class="btn btn-sm btn-erp-secondary" onclick="window.kitchen.renderKDS()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="kds-container">
+                        <!-- Column 1: Pending -->
+                        <div class="kds-column">
+                            <div class="kds-col-header">
+                                <div class="fw-bold text-warning d-flex align-items-center gap-2">
+                                    <i class="bi bi-hourglass-split"></i>
+                                    <span>PENDING / QUEUED</span>
+                                </div>
+                                <span class="badge bg-warning text-dark" id="kdsBadgePending">0</span>
+                            </div>
+                            <div class="kds-col-body overflow-y-auto" id="kdsColPending"></div>
+                        </div>
+
+                        <!-- Column 2: In Cooking -->
+                        <div class="kds-column">
+                            <div class="kds-col-header">
+                                <div class="fw-bold text-info d-flex align-items-center gap-2">
+                                    <i class="bi bi-fire"></i>
+                                    <span>IN PREP / COOKING</span>
+                                </div>
+                                <span class="badge bg-info text-dark" id="kdsBadgeCooking">0</span>
+                            </div>
+                            <div class="kds-col-body overflow-y-auto" id="kdsColCooking"></div>
+                        </div>
+
+                        <!-- Column 3: Food Ready -->
+                        <div class="kds-column">
+                            <div class="kds-col-header">
+                                <div class="fw-bold text-success d-flex align-items-center gap-2">
+                                    <i class="bi bi-bell-fill"></i>
+                                    <span>READY FOR PICKUP</span>
+                                </div>
+                                <span class="badge bg-success" id="kdsBadgeReady">0</span>
+                            </div>
+                            <div class="kds-col-body overflow-y-auto" id="kdsColReady"></div>
+                        </div>
+
+                        <!-- Column 4: Completed -->
+                        <div class="kds-column">
+                            <div class="kds-col-header">
+                                <div class="fw-bold text-secondary d-flex align-items-center gap-2">
+                                    <i class="bi bi-check2-all"></i>
+                                    <span>SERVED / RECENT</span>
+                                </div>
+                                <span class="badge bg-secondary" id="kdsBadgeCompleted">0</span>
+                            </div>
+                            <div class="kds-col-body overflow-y-auto" id="kdsColCompleted"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 4: FLOOR & TABLES ================= -->
+                <section class="view-pane" id="view-tables">
+                    <!-- Floor Stats Header -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">FLOOR OCCUPANCY</span>
+                                <div class="stat-value text-warning fs-3" id="floorOccupancyStat">0%</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">AVAILABLE TABLES</span>
+                                <div class="stat-value text-success fs-3" id="floorAvailableStat">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">CONFIRMED RESERVATIONS</span>
+                                <div class="stat-value text-info fs-3" id="floorReservedStat">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floor Navigation and Action -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-warning floor-filter-btn active" data-section="all">All Sections</button>
+                            <button class="btn btn-sm btn-outline-warning floor-filter-btn" data-section="Main Hall">Main Hall</button>
+                            <button class="btn btn-sm btn-outline-warning floor-filter-btn" data-section="Patio Terrace">Patio Terrace</button>
+                            <button class="btn btn-sm btn-outline-warning floor-filter-btn" data-section="VIP Lounge">VIP Lounge</button>
+                            <button class="btn btn-sm btn-outline-warning floor-filter-btn" data-section="Cocktail Bar">Cocktail Bar</button>
+                        </div>
+
+                        <button class="btn btn-sm btn-erp-primary" data-bs-toggle="modal" data-bs-target="#newReservationModal">
+                            <i class="bi bi-calendar-check me-1"></i> Add Reservation
+                        </button>
+                    </div>
+
+                    <!-- Floor Grid -->
+                    <div class="floor-grid mb-5" id="floorPlanGrid">
+                        <!-- Tables rendered dynamically -->
+                    </div>
+
+                    <!-- Reservations Section -->
+                    <div class="glass-panel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-calendar-event text-warning me-2"></i>Upcoming Guest Reservations</h5>
+                            <button class="btn btn-sm btn-erp-secondary" data-bs-toggle="modal" data-bs-target="#newReservationModal">
+                                <i class="bi bi-plus-lg me-1"></i>New Booking
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="erp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Guest Name</th>
+                                        <th>Phone</th>
+                                        <th>Party Size</th>
+                                        <th>Assigned Table</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th>Special Notes</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reservationTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 5: INVENTORY ================= -->
+                <section class="view-pane" id="view-inventory">
+                    <!-- Inventory KPI Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">TOTAL STOCK VALUATION</span>
+                                <div class="stat-value text-warning fs-3" id="invValuationStat">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">LOW STOCK WARNINGS</span>
+                                <div class="stat-value text-warning fs-3" id="invLowStockStat">0</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">OUT OF STOCK (CRITICAL)</span>
+                                <div class="stat-value text-danger fs-3" id="invOutOfStockStat">0</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">RAW MATERIALS TRACKED</span>
+                                <div class="stat-value text-info fs-3" id="invTotalItemsStat">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Table Panel -->
+                    <div class="glass-panel">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <input type="text" class="form-control form-control-sm erp-input" id="invSearchInput" placeholder="Search ingredient or SKU..." style="width: 220px;">
+                                <select class="form-select form-select-sm erp-input" id="invCategoryFilter" style="width: 180px;">
+                                    <option value="all">All Categories</option>
+                                    <option value="Meat & Poultry">Meat & Poultry</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Bakery">Bakery</option>
+                                    <option value="Produce & Canned">Produce & Canned</option>
+                                    <option value="Produce & Herbs">Produce & Herbs</option>
+                                    <option value="Seafood">Seafood</option>
+                                    <option value="Dry Goods">Dry Goods</option>
+                                    <option value="Beverages">Beverages</option>
+                                    <option value="Confectionery">Confectionery</option>
+                                    <option value="Oils & Condiments">Oils & Condiments</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-erp-primary" data-bs-toggle="modal" data-bs-target="#newIngredientModal">
+                                    <i class="bi bi-plus-lg me-1"></i> Add Material
+                                </button>
+                                <button class="btn btn-sm btn-erp-secondary" data-bs-toggle="modal" data-bs-target="#restockModal">
+                                    <i class="bi bi-cart-plus me-1"></i> Create PO
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="erp-table">
+                                <thead>
+                                    <tr>
+                                        <th>SKU / ID</th>
+                                        <th>Ingredient Name</th>
+                                        <th>Category</th>
+                                        <th>Current Stock / Threshold</th>
+                                        <th>Unit Cost</th>
+                                        <th>Total Valuation</th>
+                                        <th>Health Status</th>
+                                        <th class="text-end">Stock Operations</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventoryTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 6: MENU & RECIPES ================= -->
+                <section class="view-pane" id="view-menu">
+                    <div class="glass-panel">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                            <div class="btn-group flex-wrap" role="group">
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter active" data-cat="all">All Dishes</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="starters">Starters</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="mains">Mains</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="pizza_pasta">Pizza & Pasta</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="burgers_grills">Burgers & Grills</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="desserts">Desserts</button>
+                                <button class="btn btn-sm btn-outline-warning menu-mgmt-filter" data-cat="beverages">Beverages</button>
+                            </div>
+                            <button class="btn btn-sm btn-erp-primary" data-bs-toggle="modal" data-bs-target="#newDishModal">
+                                <i class="bi bi-plus-lg me-1"></i> Create Menu Dish
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="erp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item ID</th>
+                                        <th>Dish Name & Description</th>
+                                        <th>Category</th>
+                                        <th>Sale Price</th>
+                                        <th>Food Cost</th>
+                                        <th>Profit Margin</th>
+                                        <th>Availability</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menuTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 7: STAFF & ROSTER ================= -->
+                <section class="view-pane" id="view-staff">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">STAFF ON FLOOR NOW</span>
+                                <div class="stat-value text-success fs-3" id="staffActiveCountStat">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">PROJECTED DAILY PAYROLL</span>
+                                <div class="stat-value text-warning fs-3" id="staffPayrollStat">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">TOTAL REGISTERED CREW</span>
+                                <div class="stat-value text-info fs-3" id="staffTotalCountStat">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-person-badge text-warning me-2"></i>Active Restaurant Personnel</h5>
+                            <button class="btn btn-sm btn-erp-primary" data-bs-toggle="modal" data-bs-target="#newStaffModal">
+                                <i class="bi bi-person-plus me-1"></i> Add Staff Member
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="erp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff ID</th>
+                                        <th>Employee Name & Contact</th>
+                                        <th>Role / Station</th>
+                                        <th>Assigned Shift</th>
+                                        <th>Hourly Wage</th>
+                                        <th>Status & Clock Time</th>
+                                        <th class="text-end">Shift Toggle</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 8: FINANCIAL REPORTS & P&L ================= -->
+                <section class="view-pane" id="view-reports">
+                    <!-- Financial Summary Row -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">GROSS SALES</span>
+                                <div class="stat-value text-warning fs-4" id="reportGrossRevenue">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">TOTAL EXPENSES</span>
+                                <div class="stat-value text-danger fs-4" id="reportExpenses">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">NET PROFIT</span>
+                                <div class="stat-value text-success fs-4" id="reportNetProfit">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">PROFIT MARGIN</span>
+                                <div class="stat-value text-info fs-4" id="reportProfitMargin">0%</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">AVG TICKET SIZE</span>
+                                <div class="stat-value text-light fs-4" id="reportAvgTicket">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-md-4 col-sm-6">
+                            <div class="stat-card p-3">
+                                <span class="text-muted small fw-bold">PAID ORDERS</span>
+                                <div class="stat-value text-secondary fs-4" id="reportOrdersCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-6">
+                            <div class="glass-panel">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart text-warning me-2"></i>Sales Channel Share</h5>
+                                <div style="height: 240px; position: relative;">
+                                    <canvas id="channelChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="glass-panel">
+                                <h5 class="fw-bold mb-3"><i class="bi bi-trophy text-warning me-2"></i>Top 5 Signature Dishes by Sales</h5>
+                                <div style="height: 240px; position: relative;">
+                                    <canvas id="topItemsChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expenses Ledger & Completed Orders Row -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-xl-6">
+                            <div class="glass-panel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="fw-bold mb-0">Operational Expenses Ledger</h5>
+                                    <button class="btn btn-sm btn-erp-primary" data-bs-toggle="modal" data-bs-target="#newExpenseModal">
+                                        <i class="bi bi-plus-lg me-1"></i> Log Expense
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="erp-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Date</th>
+                                                <th>Expense Description</th>
+                                                <th>Category</th>
+                                                <th>Vendor</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expensesTableBody">
+                                            <!-- Rendered dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-6">
+                            <div class="glass-panel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="fw-bold mb-0">Recent Order Transactions</h5>
+                                    <button class="btn btn-sm btn-outline-success" onclick="window.reports.exportOrdersCSV()">
+                                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export CSV
+                                    </button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="erp-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Order</th>
+                                                <th>Time</th>
+                                                <th>Customer</th>
+                                                <th>Type</th>
+                                                <th>Payment</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th class="text-end">Bill</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentTransactionsTableBody">
+                                            <!-- Rendered dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= VIEW 9: SETTINGS ================= -->
+                <section class="view-pane" id="view-settings">
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="glass-panel">
+                                <h5 class="fw-bold mb-4"><i class="bi bi-sliders text-warning me-2"></i>Restaurant Profile & Financial Configurations</h5>
+                                <form id="settingsForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Restaurant Name</label>
+                                            <input type="text" class="form-control erp-input" id="settingRestName" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Tagline / Subtitle</label>
+                                            <input type="text" class="form-control erp-input" id="settingTagline">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Currency Symbol</label>
+                                            <input type="text" class="form-control erp-input" id="settingCurrency" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Sales Tax Rate (%)</label>
+                                            <input type="number" step="0.1" class="form-control erp-input" id="settingTaxRate" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Dine-in Service Charge (%)</label>
+                                            <input type="number" step="0.1" class="form-control erp-input" id="settingServiceCharge" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Contact Phone</label>
+                                            <input type="text" class="form-control erp-input" id="settingPhone">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted">Restaurant Address</label>
+                                            <input type="text" class="form-control erp-input" id="settingAddress">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small text-muted">Receipt Footer Greeting</label>
+                                            <input type="text" class="form-control erp-input" id="settingReceiptFooter">
+                                        </div>
+                                        <div class="col-12 mt-4">
+                                            <button type="submit" class="btn btn-erp-primary px-4">
+                                                <i class="bi bi-check-lg me-1"></i> Save Changes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="glass-panel">
+                                <h5 class="fw-bold mb-4"><i class="bi bi-database text-warning me-2"></i>Data Management & Backups</h5>
+                                <p class="small text-muted mb-4">Export full state backups of menu items, active orders, floor configurations, staff rosters, and financial journals.</p>
+                                
+                                <div class="d-flex flex-column gap-3">
+                                    <button class="btn btn-erp-secondary text-start p-3" id="exportBackupBtn">
+                                        <div class="fw-bold"><i class="bi bi-download me-2 text-warning"></i>Download Full JSON Backup</div>
+                                        <small class="text-muted">Save all operational databases locally</small>
+                                    </button>
+
+                                    <div class="stat-card p-3">
+                                        <label class="form-label fw-bold small mb-1"><i class="bi bi-upload me-2 text-info"></i>Restore from JSON File</label>
+                                        <input type="file" class="form-control form-control-sm erp-input mt-1" id="importBackupFileInput" accept=".json">
+                                    </div>
+
+                                    <div class="stat-card p-3 border-danger border-opacity-50">
+                                        <div class="fw-bold text-danger mb-1"><i class="bi bi-arrow-counterclockwise me-2"></i>Reset to Factory Demo Data</div>
+                                        <p class="small text-muted mb-2">Restores the system to initial seed menu, active floor plan, and sample orders.</p>
+                                        <button class="btn btn-sm btn-outline-danger" id="resetDemoDataBtn">
+                                            Restore Demo Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Payment & Settlement Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cash-stack text-warning me-2"></i>Settle Order Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center py-3 mb-3 rounded" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.2);">
+                        <div class="text-muted small text-uppercase fw-bold">Total Amount Due</div>
+                        <div class="fs-1 fw-bold text-warning" id="payModalDueTotal">$0.00</div>
+                    </div>
+
+                    <!-- Payment Method Tabs -->
+                    <label class="form-label small text-muted">Select Payment Method</label>
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-sm btn-outline-warning pay-method-pill active flex-grow-1" data-method="Cash" onclick="window.pos.setPaymentMethod('Cash')">
+                            <i class="bi bi-cash me-1"></i> Cash
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning pay-method-pill flex-grow-1" data-method="Card" onclick="window.pos.setPaymentMethod('Card')">
+                            <i class="bi bi-credit-card me-1"></i> Card
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning pay-method-pill flex-grow-1" data-method="UPI/QR" onclick="window.pos.setPaymentMethod('UPI/QR')">
+                            <i class="bi bi-qr-code me-1"></i> UPI / QR
+                        </button>
+                    </div>
+
+                    <!-- Cash Calculator -->
+                    <div id="cashCalculatorWrapper">
+                        <label class="form-label small text-muted">Tendered Cash Amount</label>
+                        <input type="number" step="any" class="form-control erp-input fs-5 fw-bold mb-2" id="tenderAmountInput" placeholder="0.00">
+                        
+                        <div class="d-flex gap-2 mb-3">
+                            <button class="btn btn-sm btn-erp-secondary flex-grow-1" onclick="window.pos.setTenderPreset(20)">$20</button>
+                            <button class="btn btn-sm btn-erp-secondary flex-grow-1" onclick="window.pos.setTenderPreset(50)">$50</button>
+                            <button class="btn btn-sm btn-erp-secondary flex-grow-1" onclick="window.pos.setTenderPreset(100)">$100</button>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background: rgba(255, 255, 255, 0.04);">
+                            <span class="fw-bold">Change to Return:</span>
+                            <span class="fs-4 fw-bold text-success" id="payModalChangeDue">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-erp-primary px-4 fw-bold" onclick="window.pos.completeOrder('paid')">
+                        <i class="bi bi-check2-circle me-1"></i> Complete & Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thermal Receipt Modal -->
+    <div class="modal fade" id="receiptModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-receipt text-warning me-2"></i>Official Dining Bill</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="background: rgba(0,0,0,0.4);">
+                    <div id="receiptPrintArea">
+                        <!-- Thermal receipt rendered here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-erp-primary px-4 fw-bold" onclick="window.pos.printReceipt()">
+                        <i class="bi bi-printer-fill me-1"></i> Print Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Reservation Modal -->
+    <div class="modal fade" id="newReservationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus text-warning me-2"></i>New Table Reservation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.tables.addNewReservation({
+                    guestName: this.resGuestName.value,
+                    phone: this.resPhone.value,
+                    guests: this.resGuests.value,
+                    tableId: this.resTableId.value,
+                    date: this.resDate.value,
+                    time: this.resTime.value,
+                    notes: this.resNotes.value
+                }); this.reset(); bootstrap.Modal.getInstance(document.getElementById('newReservationModal')).hide();">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Guest Name</label>
+                                <input type="text" name="resGuestName" class="form-control erp-input" required placeholder="e.g. Marcus Wright">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Contact Phone</label>
+                                <input type="text" name="resPhone" class="form-control erp-input" required placeholder="+1 (555) 000-0000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Party Size</label>
+                                <input type="number" name="resGuests" class="form-control erp-input" min="1" max="16" value="2" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label small text-muted">Target Table</label>
+                                <select name="resTableId" class="form-select erp-input">
+                                    <option value="T-02">Table 02 (4 seats - Main Hall)</option>
+                                    <option value="T-04">Table 04 (6 seats - Main Hall)</option>
+                                    <option value="T-05">Table 05 (2 seats - Patio)</option>
+                                    <option value="T-07">Table 07 (4 seats - Patio)</option>
+                                    <option value="T-08">Table 08 (8 seats - VIP)</option>
+                                    <option value="T-09">Table 09 (6 seats - VIP)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Date</label>
+                                <input type="date" name="resDate" class="form-control erp-input" value="2026-10-24" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Time Slot</label>
+                                <input type="time" name="resTime" class="form-control erp-input" value="19:30" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Special Requests / Allergies</label>
+                                <textarea name="resNotes" class="form-control erp-input" rows="2" placeholder="Birthday celebration, high chair, window view..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Confirm Booking</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restock / PO Modal -->
+    <div class="modal fade" id="restockModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-truck text-warning me-2"></i>Purchase Order / Restock Material</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.inventory.confirmRestock({
+                    itemId: this.restockItemSelect.value,
+                    quantity: this.restockQtyInput.value,
+                    unitCost: this.restockUnitCostInput.value,
+                    supplier: this.restockSupplierInput.value
+                });">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Select Raw Material</label>
+                                <select class="form-select erp-input" id="restockItemSelect" name="restockItemSelect">
+                                    <!-- Dynamic -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Quantity to Restock</label>
+                                <input type="number" step="any" class="form-control erp-input" id="restockQtyInput" name="restockQtyInput" value="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Purchase Unit Cost ($)</label>
+                                <input type="number" step="any" class="form-control erp-input" id="restockUnitCostInput" name="restockUnitCostInput" value="5.00" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Supplier / Vendor Name</label>
+                                <input type="text" class="form-control erp-input" id="restockSupplierInput" name="restockSupplierInput" value="Metro Wholesale Foods">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Confirm Purchase & Update Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Raw Material Modal -->
+    <div class="modal fade" id="newIngredientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-box-seam text-warning me-2"></i>Add New Raw Material</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.inventory.addNewIngredient({
+                    name: this.ingName.value,
+                    category: this.ingCat.value,
+                    stock: this.ingStock.value,
+                    unit: this.ingUnit.value,
+                    minThreshold: this.ingMin.value,
+                    cost: this.ingCost.value
+                }); this.reset();">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Material Name</label>
+                                <input type="text" name="ingName" class="form-control erp-input" required placeholder="e.g. Grass-Fed Ribeye Steak">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Category</label>
+                                <select name="ingCat" class="form-select erp-input">
+                                    <option value="Meat & Poultry">Meat & Poultry</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Bakery">Bakery</option>
+                                    <option value="Produce & Canned">Produce & Canned</option>
+                                    <option value="Produce & Herbs">Produce & Herbs</option>
+                                    <option value="Seafood">Seafood</option>
+                                    <option value="Dry Goods">Dry Goods</option>
+                                    <option value="Beverages">Beverages</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Measuring Unit</label>
+                                <input type="text" name="ingUnit" class="form-control erp-input" required placeholder="kg, L, pcs, bottles">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Initial Stock</label>
+                                <input type="number" step="any" name="ingStock" class="form-control erp-input" required value="10">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Min Threshold</label>
+                                <input type="number" step="any" name="ingMin" class="form-control erp-input" required value="3">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small text-muted">Unit Cost ($)</label>
+                                <input type="number" step="any" name="ingCost" class="form-control erp-input" required value="8.50">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Save Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Dish Modal -->
+    <div class="modal fade" id="newDishModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-egg-fried text-warning me-2"></i>Create New Menu Dish</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.menu.addNewDish({
+                    name: this.dishName.value,
+                    category: this.dishCat.value,
+                    price: this.dishPrice.value,
+                    cost: this.dishCost.value,
+                    description: this.dishDesc.value,
+                    prepTime: this.dishPrep.value,
+                    calories: this.dishCal.value,
+                    isVeg: this.dishVeg.checked,
+                    isSpicy: this.dishSpicy.checked
+                }); this.reset();">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Dish Title</label>
+                                <input type="text" name="dishName" class="form-control erp-input" required placeholder="e.g. Lobster Bisque Truffle Tagliatelle">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Category</label>
+                                <select name="dishCat" class="form-select erp-input">
+                                    <option value="starters">Starters & Tapas</option>
+                                    <option value="mains">Signature Mains</option>
+                                    <option value="pizza_pasta">Woodfired & Pasta</option>
+                                    <option value="burgers_grills">Burgers & Steaks</option>
+                                    <option value="desserts">Artisan Desserts</option>
+                                    <option value="beverages">Cocktails & Brews</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted">Sale Price ($)</label>
+                                <input type="number" step="0.5" name="dishPrice" class="form-control erp-input" required value="22.00">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small text-muted">Food Cost ($)</label>
+                                <input type="number" step="0.5" name="dishCost" class="form-control erp-input" required value="6.50">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Est. Prep Time (Mins)</label>
+                                <input type="number" name="dishPrep" class="form-control erp-input" value="12">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Calories (kcal)</label>
+                                <input type="number" name="dishCal" class="form-control erp-input" value="550">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Description / Ingredients summary</label>
+                                <textarea name="dishDesc" class="form-control erp-input" rows="2" placeholder="Rich velvety bisque, butter-poached lobster..."></textarea>
+                            </div>
+                            <div class="col-12 d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="dishVeg" id="dishVeg">
+                                    <label class="form-check-label small" for="dishVeg">Vegetarian</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="dishSpicy" id="dishSpicy">
+                                    <label class="form-check-label small" for="dishSpicy">Spicy</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Add to Menu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Staff Modal -->
+    <div class="modal fade" id="newStaffModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus text-warning me-2"></i>Add Staff Member</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.staff.addNewStaff({
+                    name: this.staffName.value,
+                    role: this.staffRole.value,
+                    shift: this.staffShift.value,
+                    wage: this.staffWage.value,
+                    phone: this.staffPhone.value
+                }); this.reset();">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Full Name</label>
+                                <input type="text" name="staffName" class="form-control erp-input" required placeholder="e.g. Julian Ross">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Role / Position</label>
+                                <input type="text" name="staffRole" class="form-control erp-input" required placeholder="e.g. Line Cook / Bartender">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Shift Schedule</label>
+                                <select name="staffShift" class="form-select erp-input">
+                                    <option value="Morning Shift (8 AM - 4 PM)">Morning Shift (8 AM - 4 PM)</option>
+                                    <option value="Evening Shift (4 PM - 12 AM)">Evening Shift (4 PM - 12 AM)</option>
+                                    <option value="Full Day Service">Full Day Service</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Hourly Wage ($)</label>
+                                <input type="number" step="0.5" name="staffWage" class="form-control erp-input" required value="20.00">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Phone Number</label>
+                                <input type="text" name="staffPhone" class="form-control erp-input" placeholder="+1 (555) 000-0000">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Register Employee</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Expense Modal -->
+    <div class="modal fade" id="newExpenseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-wallet2 text-warning me-2"></i>Log Operational Expense</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form onsubmit="event.preventDefault(); window.reports.addCustomExpense({
+                    title: this.expTitle.value,
+                    category: this.expCategory.value,
+                    amount: this.expAmount.value,
+                    supplier: this.expSupplier.value,
+                    date: this.expDate.value
+                }); this.reset();">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small text-muted">Expense Description</label>
+                                <input type="text" name="expTitle" class="form-control erp-input" required placeholder="e.g. Commercial Dishwasher Detergent & Rinse">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Category</label>
+                                <select name="expCategory" class="form-select erp-input">
+                                    <option value="Kitchen Supplies">Kitchen Supplies</option>
+                                    <option value="Utilities">Utilities & Power</option>
+                                    <option value="Maintenance">Maintenance & Repairs</option>
+                                    <option value="Marketing">Marketing & Promotion</option>
+                                    <option value="Beverages">Beverages Consignment</option>
+                                    <option value="Other">Other Operating Cost</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Amount ($)</label>
+                                <input type="number" step="0.01" name="expAmount" class="form-control erp-input" required placeholder="0.00">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Vendor / Payee</label>
+                                <input type="text" name="expSupplier" class="form-control erp-input" placeholder="e.g. Ecolab Services">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Date</label>
+                                <input type="date" name="expDate" class="form-control erp-input" value="2026-10-24">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-erp-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-erp-primary">Record Expense</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Bootstrap 5.3.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js 4.4.2 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+    <!-- Application JavaScript Modules -->
+    <script src="js/audio.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/pos.js"></script>
+    <script src="js/kitchen.js"></script>
+    <script src="js/tables.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/staff.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
